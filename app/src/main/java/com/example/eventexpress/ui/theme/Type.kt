@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.sp
 import com.example.eventexpress.R
 
 val dancingFamily : FontFamily = FontFamily(Font(R.font.dancing_font))
+val tiltFont : FontFamily = FontFamily(Font(R.font.tilt_font))
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

@@ -1,5 +1,8 @@
 package com.example.eventexpress.presentation
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,9 +14,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -44,6 +49,7 @@ import androidx.compose.ui.zIndex
 import coil.compose.AsyncImagePainter.State.Empty.painter
 import coil.compose.rememberAsyncImagePainter
 import com.example.eventexpress.R
+import com.example.eventexpress.ui.theme.tiltFont
 
 @Composable
 fun EventCard(it:Int, mainViewModel: MainViewModel){
@@ -51,12 +57,15 @@ fun EventCard(it:Int, mainViewModel: MainViewModel){
         modifier = Modifier
             .padding(0.dp, 5.dp)
             .fillMaxWidth(0.9f)
-            .height(280.dp),
+            .height(250.dp),
         shape = RoundedCornerShape(25.dp),
         color = mainViewModel.transiColor
     ) {
+        var expand by remember {
+            mutableStateOf(false)
+        }
         Image(
-            painter = rememberAsyncImagePainter(model = mainViewModel.state.eventsList[it].coverImage),
+            painter = rememberAsyncImagePainter(model = mainViewModel.state.tempEventsList[it].coverImage),
             contentDescription = "",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -69,58 +78,62 @@ fun EventCard(it:Int, mainViewModel: MainViewModel){
             .background(Color(255, 255, 255, 32)))
         Column(modifier = Modifier.fillMaxSize()) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = mainViewModel.state.eventsList[it].name,
-                        modifier = Modifier
-                            .zIndex(2f)
-                            .padding(15.dp),
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                    Text(
-                        text = mainViewModel.state.eventsList[it].date +"  "+ mainViewModel.state.eventsList[it].timeHour+":"+ mainViewModel.state.eventsList[it].timeMinute,
-                        modifier = Modifier
-                            .zIndex(2f)
-                            .padding(15.dp, 5.dp),
-                        color = Color.White,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Light
-                    )
-                    Text(
-                        text = "Organized by "+ mainViewModel.state.eventsList[it].organizers.joinToString(", "),
-                        modifier = Modifier
-                            .zIndex(2f)
-                            .padding(15.dp, 3.dp),
-                        color = Color.White,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Light
-                    )
+                AnimatedVisibility(visible = expand) {
+                    Column(modifier = Modifier
+                        .weight(1f)
+                        .width(250.dp)
+                        .clickable {
+                            mainViewModel.state.currentEvent = mainViewModel.state.tempEventsList[it]
+                            mainViewModel.setupColors()
+                            mainViewModel.expandInfoCard = true
+                        }) {
+                        Text(
+                            text = mainViewModel.state.tempEventsList[it].name,
+                            modifier = Modifier
+                                .zIndex(2f)
+                                .padding(15.dp),
+                            color = Color.White,
+                            fontFamily = tiltFont,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            text = mainViewModel.state.tempEventsList[it].date +"  "+ mainViewModel.state.tempEventsList[it].timeHour+":"+ mainViewModel.state.tempEventsList[it].timeMinute,
+                            modifier = Modifier
+                                .zIndex(2f)
+                                .padding(15.dp, 5.dp),
+                            color = Color.White,
+                            fontFamily = tiltFont,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Light
+                        )
+                        Text(
+                            text = mainViewModel.state.tempEventsList[it].location,
+                            modifier = Modifier
+                                .zIndex(2f)
+                                .padding(15.dp, 3.dp),
+                            color = Color.White,
+                            fontFamily = tiltFont,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Light
+                        )
+                    }
                 }
                 Image(
-                    painter = rememberAsyncImagePainter(model = mainViewModel.state.eventsList[it].coverImage),
+                    painter = rememberAsyncImagePainter(model = mainViewModel.state.tempEventsList[it].coverImage),
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(bottomStart = 25.dp))
+                        .clip(RoundedCornerShape(25.dp))
                         .padding(0.dp)
-                        .height(200.dp)
-                        .width(140.dp)
+                        .height(250.dp)
+                        .fillMaxWidth()
                         .zIndex(1f)
+                        .clickable {
+                            expand = !expand
+                        }
                 )
             }
-            Row(Modifier.fillMaxWidth().weight(1f), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                var iconColor by remember { mutableStateOf(Color(255, 255, 255, 171)) }
-                Icon(painter = painterResource(id = R.drawable.fav_icon), contentDescription = "", tint = iconColor, modifier = Modifier
-                    .padding(10.dp)
-                    .size(45.dp)
-                    .padding(7.dp)
-                    .clickable {
-
-                    })
-            }
-
         }
     }
 }

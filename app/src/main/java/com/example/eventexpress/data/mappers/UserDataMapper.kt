@@ -13,7 +13,11 @@ fun UserEntity.toUserDataModel(): UserDataModel{
     val eventId: List<String> = listOf(*UserEventsIds.split(",").toTypedArray())
     val fav: List<String> = listOf(*userFavourites.split(",").toTypedArray())
     return UserDataModel(
-        id, name,profilePic, eventId, fav
+        id?: "",
+        name ?: "",
+        profilePic ?: "",
+        eventId.toMutableList() ?: mutableListOf(),
+        fav.toMutableList() ?: mutableListOf()
     )
 }
 fun UserData.toUserDataModel(): UserDataModel{

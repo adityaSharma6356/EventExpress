@@ -1,5 +1,6 @@
 package com.example.eventexpress.data.repository
 
+import android.util.Log
 import com.example.eventexpress.data.local.event.EventsDatabase
 import com.example.eventexpress.data.local.user.UserDatabase
 import com.example.eventexpress.data.mappers.toEventEntity
@@ -32,16 +33,19 @@ class DataRepositoryImp @Inject constructor(
         return flow {
 
             emit(Resource.Loading(isLoading = true))
-
+            Log.d("likestate", userId)
             val localUserData = userDb.searchUserData(userId)
-
-            emit(Resource.Success(localUserData.toUserDataModel(), "local"))
-
+            if(localUserData!=null){
+                emit(Resource.Success(localUserData.toUserDataModel(), "local"))
+            }
             val remoteUserData = usersApi.getUserDataById(userId)
 
             if(remoteUserData!=null){
                 userDb.insertUserData(remoteUserData.toUserEntity())
+                Log.d("likestate", "remote: $remoteUserData")
                 emit(Resource.Success(remoteUserData, "remote"))
+            } else {
+                emit(Resource.Error("noData"))
             }
 
             emit(Resource.Loading(isLoading = false))

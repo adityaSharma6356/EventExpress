@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -22,7 +23,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.eventexpress.data.mappers.toUserDataModel
 import com.example.eventexpress.domain.models.UserDataModel
+import com.example.eventexpress.presentation.BottomScreen
 import com.example.eventexpress.presentation.MainScreen
 import com.example.eventexpress.presentation.MainViewModel
 import com.example.eventexpress.presentation.sign_in.GoogleAuthUIClient
@@ -55,6 +58,14 @@ class MainActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        lifecycleScope.launch {
+            val temp = googleAuthUiClient.getSignedInUser()
+            if(temp!=null){
+                mainViewModel.user = temp
+                mainViewModel.loadUserData()
+            }
+        }
+
         setContent {
             EventExpressTheme {
 
@@ -82,26 +93,8 @@ class MainActivity : ComponentActivity() {
                             ),
                         color = Color.Transparent
                     ) {
-                        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-                            val (bottomBar) = createRefs()
-                            MainScreen(mainViewModel = mainViewModel, googleAuthUiClient)
-                            Card(
-                                backgroundColor = Color.Transparent,
-                                modifier = Modifier
-                                    .background(
-                                        Brush.verticalGradient(
-                                            listOf(
-                                                Color.Transparent,
-                                                Color.Blue
-                                            )
-                                        )
-                                    )
-                                    .fillMaxWidth()
-                                    .constrainAs(bottomBar) {
-                                        bottom.linkTo(parent.bottom)
-                                    }) {
-                            }
-                        }
+                        MainScreen(mainViewModel = mainViewModel, googleAuthUiClient)
+                        BottomScreen(mainViewModel, googleAuthUiClient)
                     }
                 }
             }
