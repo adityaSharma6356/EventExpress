@@ -1,7 +1,9 @@
 package com.example.eventexpress.data.mappers
 
+import androidx.room.TypeConverter
 import com.example.eventexpress.data.local.event.EventEntity
 import com.example.eventexpress.domain.models.EventModel
+import com.google.firebase.Timestamp
 
 
 fun EventEntity.toEventModel() : EventModel{
@@ -13,9 +15,6 @@ fun EventEntity.toEventModel() : EventModel{
         id,
         name,
         description,
-        date,
-        timeHour,
-        timeMinute,
         location,
         venue,
         orgList,
@@ -24,7 +23,8 @@ fun EventEntity.toEventModel() : EventModel{
         cateList,
         registrationDeadlines,
         additionalDetails,
-        uploadedByUserid
+        uploadedByUserid,
+        time
     )
 }
 
@@ -34,9 +34,6 @@ fun EventModel.toEventEntity() : EventEntity{
         id,
         name,
         description,
-        date,
-        timeHour,
-        timeMinute,
         location,
         venue,
         organizers.joinToString(","),
@@ -45,6 +42,20 @@ fun EventModel.toEventEntity() : EventEntity{
         categories.joinToString(","),
         registrationDeadlines,
         additionalDetails,
-        uploadedByUserid
+        uploadedByUserid,
+        time
     )
 }
+
+class Converters {
+    @TypeConverter
+    fun longToTimeStamp(long: Long): Timestamp {
+        return Timestamp(long, 0)
+    }
+
+    @TypeConverter
+    fun timestampToLong(time:Timestamp): Long {
+        return time.seconds
+    }
+}
+

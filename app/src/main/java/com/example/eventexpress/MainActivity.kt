@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Card
@@ -83,15 +84,14 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),color = Color.Black,
                 ) {
-                    Surface(
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(
                                 Brush.verticalGradient(
-                                    listOf(Color(79, 27, 18, 255), Color.Transparent)
+                                    listOf(Color(79, 27, 18, 255),Color(79, 27, 18, 255), Color.Transparent)
                                 )
-                            ),
-                        color = Color.Transparent
+                            )
                     ) {
                         MainScreen(mainViewModel = mainViewModel, googleAuthUiClient)
                         BottomScreen(mainViewModel, googleAuthUiClient)

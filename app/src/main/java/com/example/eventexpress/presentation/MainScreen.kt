@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,13 +44,17 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.eventexpress.R
@@ -77,14 +82,31 @@ fun MainScreen(mainViewModel: MainViewModel, googleAuthUiClient: GoogleAuthUICli
         }
     }
     val offX by animateDpAsState(targetValue = mainViewModel.offset.dp)
+    val state = rememberLazyListState()
+    var prev by remember { mutableStateOf(0) }
+    LaunchedEffect(key1 = state){
+        snapshotFlow {state.firstVisibleItemIndex}
+            .collect {
+                if(!state.canScrollBackward){
+                    mainViewModel.searchHt = true
+                } else if(it > prev){
+                    mainViewModel.searchHt = false
+                    prev = it
+                } else if(it < prev){
+                    mainViewModel.searchHt = true
+                    prev = it
+                }
+            }
+    }
     Column(modifier = Modifier
-        .fillMaxSize()
+        .fillMaxWidth()
+        .background(Color(79, 27, 18, 255))
+        .zIndex(2f)
         .offset(offX), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
-                .background(Color.Transparent),
         ) {
             Icon(painter = painterResource(id = R.drawable.manu_icon), contentDescription = "", tint = Color.White, modifier = Modifier
                 .padding(start = 20.dp)
@@ -97,11 +119,11 @@ fun MainScreen(mainViewModel: MainViewModel, googleAuthUiClient: GoogleAuthUICli
                     if (mainViewModel.sideNav) {
                         mainViewModel.sideNav = false
                         iconColor = mainViewModel.lightColor
-                        mainViewModel.offset = 0
+//                        mainViewModel.offset = 0
                     } else {
                         mainViewModel.sideNav = true
                         iconColor = mainViewModel.brightColor
-                        mainViewModel.offset = 250
+//                        mainViewModel.offset = 250
                     }
                 })
             Text(
@@ -127,22 +149,6 @@ fun MainScreen(mainViewModel: MainViewModel, googleAuthUiClient: GoogleAuthUICli
                         mainViewModel.openProfile = true
                     })
 
-        }
-        val state = rememberLazyListState()
-        var prev by remember { mutableStateOf(0) }
-        LaunchedEffect(key1 = state){
-            snapshotFlow {state.firstVisibleItemIndex}
-                .collect {
-                    if(!state.canScrollBackward){
-                        mainViewModel.searchHt = true
-                    } else if(it > prev){
-                        mainViewModel.searchHt = false
-                        prev = state.firstVisibleItemIndex
-                    } else if(it < prev){
-                        mainViewModel.searchHt = true
-                        prev = state.firstVisibleItemIndex
-                    }
-                }
         }
         Spacer(modifier = Modifier
             .height(10.dp)
@@ -269,11 +275,15 @@ fun MainScreen(mainViewModel: MainViewModel, googleAuthUiClient: GoogleAuthUICli
         Spacer(modifier = Modifier
             .height(10.dp)
             .fillMaxWidth())
-        AnimatedVisibility(visible = mainViewModel.mainListVisibility , enter = fadeIn(), exit = fadeOut()) {
-            LazyColumn(Modifier.weight(1f) , contentPadding = PaddingValues(bottom = 70.dp), state = state){
-                items(mainViewModel.state.tempEventsList.size){
-                    EventCard(it, mainViewModel)
-                }
+    }
+    AnimatedVisibility(visible = mainViewModel.mainListVisibility , enter = fadeIn(), exit = fadeOut()) {
+        LazyColumn(
+            Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .zIndex(1f) , horizontalAlignment = Alignment.CenterHorizontally, contentPadding = PaddingValues(bottom = 70.dp, top = 245.dp), state = state){
+            items(mainViewModel.state.tempEventsList.size){
+                EventCard(it, mainViewModel, googleAuthUiClient)
             }
         }
     }

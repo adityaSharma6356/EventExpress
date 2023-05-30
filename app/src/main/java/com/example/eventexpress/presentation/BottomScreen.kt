@@ -42,8 +42,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -68,6 +72,7 @@ fun BottomScreen(mainViewModel: MainViewModel, googleAuthUIClient: GoogleAuthUIC
     }
     Box(modifier = Modifier
         .offset(y = padding)
+        .zIndex(3f)
         .background(Color(0, 0, 0, 218))
         .fillMaxSize()
     ) {
@@ -95,7 +100,7 @@ fun BottomScreen(mainViewModel: MainViewModel, googleAuthUIClient: GoogleAuthUIC
                         modifier = Modifier
                             .zIndex(2f)
                             .basicMarquee()
-                            .padding(25.dp, 3.dp),
+                            .padding(25.dp, 10.dp),
                         color = Color.White,
                         maxLines = 1,
                         fontFamily = tiltFont,
@@ -103,61 +108,86 @@ fun BottomScreen(mainViewModel: MainViewModel, googleAuthUIClient: GoogleAuthUIC
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = mainViewModel.state.currentEvent.date +"     "+ mainViewModel.state.currentEvent.timeHour+":"+ mainViewModel.state.currentEvent.timeMinute,
+                        text = mainViewModel.state.currentEvent.time.toDate().toString(),
                         modifier = Modifier
                             .zIndex(2f)
-                            .padding(25.dp, 3.dp),
-                        color = Color.White,
+                            .padding(25.dp, 10.dp),
+                        color = Color(255, 255, 255, 200),
                         fontFamily = tiltFont,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Thin
                     )
                     Text(
-                        text = mainViewModel.state.currentEvent.location+"\n"+mainViewModel.state.currentEvent.venue,
+                        buildAnnotatedString {
+                            withStyle(SpanStyle(color = Color.White)){
+                                append("Location and Venue : ")
+                            }
+                            append( mainViewModel.state.currentEvent.location+"\n"+mainViewModel.state.currentEvent.venue)
+                        },
                         modifier = Modifier
                             .zIndex(2f)
-                            .padding(25.dp, 3.dp),
-                        color = Color.White,
+                            .padding(25.dp, 10.dp),
+                        color = Color(255, 255, 255, 200),
                         fontFamily = tiltFont,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Thin
                     )
                     Text(
-                        text = "Categories : "+ mainViewModel.state.currentEvent.categories.joinToString(", "),
+                        buildAnnotatedString {
+                            withStyle(SpanStyle(color = Color.White)){
+                                append("Categories : ")
+                            }
+                            append(mainViewModel.state.currentEvent.categories.joinToString(", "))
+                        },
                         modifier = Modifier
                             .zIndex(2f)
-                            .padding(25.dp, 3.dp),
-                        color = Color.White,
+                            .padding(25.dp, 10.dp),
+                        color = Color(255, 255, 255, 200),
                         fontFamily = tiltFont,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Thin
                     )
                     Text(
-                        text = "Description :\n"+mainViewModel.state.currentEvent.description,
+                        buildAnnotatedString {
+                            withStyle(SpanStyle(color = Color.White)){
+                                append("Description : \n")
+                            }
+                            append(mainViewModel.state.currentEvent.description)
+                        },
                         modifier = Modifier
                             .zIndex(2f)
                             .padding(25.dp, 13.dp),
-                        color = Color.White,
+                        color = Color(255, 255, 255, 200),
                         fontFamily = tiltFont,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Thin
                     )
                     Text(
-                        text = "Register by : "+mainViewModel.state.currentEvent.registrationDeadlines,
+                        buildAnnotatedString {
+                                             withStyle(SpanStyle(color = Color.White)){
+                                                 append("Register by : ")
+                                             }
+                            append(mainViewModel.state.currentEvent.registrationDeadlines.toDate().toString())
+                        },
                         modifier = Modifier
                             .zIndex(2f)
                             .padding(25.dp, 13.dp),
-                        color = Color.White,
+                        color = Color(255, 255, 255, 200),
                         fontFamily = tiltFont,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Thin
                     )
                     Text(
-                        text = "Organized by : "+mainViewModel.state.currentEvent.organizers.joinToString(", "),
+                        buildAnnotatedString {
+                            withStyle(SpanStyle(color = Color.White)){
+                                append("Organized by : ")
+                            }
+                            append(mainViewModel.state.currentEvent.organizers.joinToString(", "))
+                        },
                         modifier = Modifier
                             .zIndex(2f)
                             .padding(25.dp, 13.dp),
-                        color = Color.White,
+                        color = Color(255, 255, 255, 200),
                         fontFamily = tiltFont,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Thin

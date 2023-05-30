@@ -77,8 +77,8 @@ class MainViewModel @Inject constructor(
     fun switchToLatest(){
         viewModelScope.launch {
             mainListVisibility = false
-            delay(350L)
-            val list  = state.eventsList.sortedByDescending { it.date }
+            delay(250L)
+            val list  = state.eventsList.sortedByDescending { it.time }
             state = state.copy(tempEventsList = list)
             mainListVisibility = true
         }
@@ -86,7 +86,7 @@ class MainViewModel @Inject constructor(
     fun switchToLiked(){
         viewModelScope.launch {
             mainListVisibility = false
-            delay(350L)
+            delay(250L)
             val list = state.eventsList.filter { bItem -> state.userData.userFavourites.any { aItem -> aItem == bItem.id } }
             state = state.copy(tempEventsList = list)
             mainListVisibility = true

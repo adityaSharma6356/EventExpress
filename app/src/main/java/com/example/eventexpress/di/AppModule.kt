@@ -26,7 +26,9 @@ class AppModule {
             app,
             EventsDatabase::class.java,
             "events.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
